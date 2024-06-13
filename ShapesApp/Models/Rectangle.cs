@@ -9,5 +9,6 @@ namespace ShapesApp.Models
         public Point BottomRight { get; set; }
         public Point TopLeft { get; set; }
         public Point TopRight { get; set; }
+        public string Tag { get; set; }
     }
 }

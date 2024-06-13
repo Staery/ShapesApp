@@ -1,0 +1,80 @@
+﻿<Window x:Class="ShapesApp.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ShapesApp.ViewModels"
+        xmlns:converters="clr-namespace:ShapesApp.Converters"
+        xmlns:m="clr-namespace:ShapesApp.Models"
+        Title="Rectangle Triangle Generator" Height="650" Width="1100">
+    <Window.Resources>
+        <converters:RectangleToPointsConverter x:Key="RectangleToPointsConverter"/>
+    </Window.Resources>
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Левая колонка с элементами управления -->
+        <StackPanel Grid.Column="0" Margin="10">
+            <Button Content="Highlight Extreme Points"  
+            CommandParameter="{Binding SelectedItems, Mode=OneWay, ElementName=colorFilterListBox}"
+            Command="{Binding HighlightExtremePointsCommand}"
+            Margin="0 0 0 10" />
+            <Button Content="Generate New Shapes"
+            Command="{Binding GenerateShapesCommand}"
+            Margin="0 0 0 10" />
+            <CheckBox Content="Exclude Outliers" 
+            IsChecked="{Binding ExcludeOutliers}" 
+            Margin="0 0 0 10" />
+            <ListBox x:Name="colorFilterListBox" 
+            ItemsSource="{Binding UsedColors, Mode=TwoWay}"
+            Width="200" 
+            Height="100" 
+            SelectionMode="Multiple">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Rectangle Width="20" Height="20" 
+                                Fill="{Binding Converter={StaticResource ColorToBrushConverter}}" />
+                            <TextBlock Text="{Binding}" Margin="5,0,0,0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <CheckBox Content="Include Selected Colors" 
+            IsChecked="{Binding IncludeColorFilter}" 
+            Margin="0 10 0 0" />
+        </StackPanel>
+
+
+        <!-- Правая колонка с Canvas и ItemsControl -->
+        <ItemsControl Grid.Column="1" ItemsSource="{Binding Rectangles}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Polygon Points="{Binding Converter={StaticResource RectangleToPointsConverter}}"
+                     Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
+                     Stroke="Black">
+                        <Polygon.Style>
+                            <Style TargetType="Polygon">
+                                <Setter Property="StrokeThickness" Value="2" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Tag}" Value="Main">
+                                        <Setter Property="StrokeThickness" Value="4" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Polygon.Style>
+                    </Polygon>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</Window>

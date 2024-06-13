@@ -2,10 +2,10 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Xml.Linq;
 using ShapesApp.Commands;
 using ShapesApp.Models;
 
@@ -14,8 +14,10 @@ namespace ShapesApp.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly Random random = new Random();
-        private Rectangle MainRectangle { get; set; }
+        private Rectangle mainRectangle;
         private bool excludeOutliers = true;
+        private string logFilePath = "shapes_log.txt"; // Путь к файлу лога
+
         public ObservableCollection<Rectangle> Rectangles { get; set; }
         public ObservableCollection<Color> UsedColors { get; set; }
         public ObservableCollection<Color> SelectedColors { get; set; }
@@ -48,9 +50,11 @@ namespace ShapesApp.ViewModels
 
         private void GenerateShapes()
         {
+            LogMessage("Generating new shapes...");
+
             UsedColors.Clear();
             Rectangles.Clear();
-            MainRectangle = new Rectangle
+            mainRectangle = new Rectangle
             {
                 Color = Colors.White,
                 BottomLeft = new Point(100, 100),
@@ -59,7 +63,7 @@ namespace ShapesApp.ViewModels
                 TopRight = new Point(600, 300),
                 Tag = "Main"
             };
-            Rectangles.Add(MainRectangle);
+            Rectangles.Add(mainRectangle);
 
             for (int i = 0; i < 5; i++)
             {
@@ -70,6 +74,8 @@ namespace ShapesApp.ViewModels
                     UsedColors.Add(randomRectangle.Color);
                 }
             }
+
+            LogMessage("Shapes generated.");
         }
 
         private Rectangle GenerateRandomRectangle()
@@ -95,6 +101,7 @@ namespace ShapesApp.ViewModels
 
         private void HighlightExtremePoints(object parameter)
         {
+            LogMessage("Highlighting extreme points...");
 
             double minX = double.MaxValue;
             double minY = double.MaxValue;
@@ -105,7 +112,7 @@ namespace ShapesApp.ViewModels
 
             IList colorFilterListBox = (IList)parameter;
 
-            foreach (object selectedItem in colorFilterListBox) 
+            foreach (object selectedItem in colorFilterListBox)
             {
                 string colorTag = selectedItem.ToString();
                 Color color = (Color)ColorConverter.ConvertFromString(colorTag);
@@ -150,23 +157,28 @@ namespace ShapesApp.ViewModels
             };
 
             Rectangles.Add(extremeRectangle);
+
+            LogMessage("Extreme points highlighted.");
         }
 
         private void RemoveOldRectangle()
         {
-            foreach (var rectangle in Rectangles)
+            foreach (var rectangle in Rectangles.ToList()) // ToList() is used to avoid modification exceptions
             {
-                if (rectangle != null && rectangle.Tag == "Main") { Rectangles.Remove(rectangle); break; }
+                if (rectangle.Tag == "Main")
+                {
+                    Rectangles.Remove(rectangle);
+                    break; // Exit loop after removing the first "Main" rectangle
+                }
             }
         }
-    
 
-    private bool IsPointInsideMainRectangle(Rectangle rectangle)
+        private bool IsPointInsideMainRectangle(Rectangle rectangle)
         {
             foreach (var point in new[] { rectangle.BottomLeft, rectangle.BottomRight, rectangle.TopLeft, rectangle.TopRight })
             {
-                if (point.X < MainRectangle.BottomLeft.X || point.X > MainRectangle.BottomRight.X ||
-                    point.Y < MainRectangle.BottomLeft.Y || point.Y > MainRectangle.TopLeft.Y)
+                if (point.X < mainRectangle.BottomLeft.X || point.X > mainRectangle.BottomRight.X ||
+                    point.Y < mainRectangle.BottomLeft.Y || point.Y > mainRectangle.TopLeft.Y)
                 {
                     return false;
                 }
@@ -174,6 +186,21 @@ namespace ShapesApp.ViewModels
             return true;
         }
 
+        private void LogMessage(string message)
+        {
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(logFilePath, true))
+                {
+                    writer.WriteLine($"{DateTime.Now} - {message}");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions in writing to log file
+                Console.WriteLine($"Error writing to log file: {ex.Message}");
+            }
+        }
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
@@ -182,6 +209,4 @@ namespace ShapesApp.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
     }
-
-   
 }

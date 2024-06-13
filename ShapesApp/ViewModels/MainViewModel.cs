@@ -14,6 +14,7 @@ namespace ShapesApp.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly Random random = new Random();
+        private string MainRectangleTeg = "Main"; //Тег для главного прямоугольника
         private Rectangle mainRectangle;
         private bool excludeOutliers = true;
         private string logFilePath = "shapes_log.txt"; // Путь к файлу лога
@@ -152,8 +153,8 @@ namespace ShapesApp.ViewModels
                 BottomRight = new Point(maxX, minY),
                 TopLeft = new Point(minX, maxY),
                 TopRight = new Point(maxX, maxY),
-                Color = Colors.Transparent, // or any other color that you use to highlight the extreme rectangle
-                Tag = "Main"
+                Color = Colors.Transparent,
+                Tag = MainRectangleTeg
             };
 
             Rectangles.Add(extremeRectangle);
@@ -163,12 +164,12 @@ namespace ShapesApp.ViewModels
 
         private void RemoveOldRectangle()
         {
-            foreach (var rectangle in Rectangles.ToList()) // ToList() is used to avoid modification exceptions
+            foreach (var rectangle in Rectangles.ToList())
             {
-                if (rectangle.Tag == "Main")
+                if (rectangle.Tag == MainRectangleTeg)
                 {
                     Rectangles.Remove(rectangle);
-                    break; // Exit loop after removing the first "Main" rectangle
+                    break;
                 }
             }
         }
@@ -197,7 +198,6 @@ namespace ShapesApp.ViewModels
             }
             catch (Exception ex)
             {
-                // Handle exceptions in writing to log file
                 Console.WriteLine($"Error writing to log file: {ex.Message}");
             }
         }

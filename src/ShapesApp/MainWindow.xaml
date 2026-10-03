@@ -1,0 +1,316 @@
+<Window x:Class="ShapesApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:ShapesApp.Core.ViewModels;assembly=ShapesApp.Core"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
+        Title="ShapesApp — bounding box explorer"
+        Width="1280"
+        Height="800"
+        MinWidth="980"
+        MinHeight="640"
+        Icon="Assets/shapesapp.ico"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource AppBackgroundBrush}"
+        FontFamily="{StaticResource UiFont}"
+        TextOptions.TextFormattingMode="Display"
+        UseLayoutRounding="True">
+
+  <Window.InputBindings>
+    <KeyBinding Command="{Binding GenerateCommand}" Gesture="Ctrl+G" />
+    <KeyBinding Command="{Binding HighlightExtremePointsCommand}" Gesture="Ctrl+H" />
+  </Window.InputBindings>
+
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="300" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <!-- ============================== Sidebar ============================== -->
+    <Border Background="{StaticResource SidebarBrush}">
+      <DockPanel Margin="16,20,16,16">
+
+        <!-- Brand -->
+        <StackPanel Margin="4,0,0,22" DockPanel.Dock="Top" Orientation="Horizontal">
+          <Image Width="38" Height="38" Source="Assets/logo.png" />
+          <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+            <TextBlock FontSize="17" FontWeight="SemiBold" Foreground="White" Text="ShapesApp" />
+            <TextBlock FontSize="12" Foreground="{StaticResource SidebarMutedBrush}" Text="Bounding box explorer" />
+          </StackPanel>
+        </StackPanel>
+
+        <!-- Result, pinned to the bottom -->
+        <StackPanel DockPanel.Dock="Bottom">
+          <Button Margin="0,0,0,8"
+                  HorizontalAlignment="Stretch"
+                  Command="{Binding HighlightExtremePointsCommand}"
+                  Style="{StaticResource PrimaryButton}"
+                  ToolTip="Draw the box around the extreme points (Ctrl+H)">
+            <StackPanel Orientation="Horizontal">
+              <Path Margin="0,0,8,0" Data="{StaticResource Icon.BoundingBox}" Style="{StaticResource Icon}" />
+              <TextBlock Text="Highlight extreme points" />
+            </StackPanel>
+          </Button>
+          <Button Margin="0,0,0,12"
+                  HorizontalAlignment="Center"
+                  Command="{Binding HideExtremePointsCommand}"
+                  Content="Hide bounding box"
+                  Style="{StaticResource LinkButton}"
+                  Visibility="{Binding IsBoundingBoxVisible, Converter={StaticResource VisibleWhen}}" />
+          <Border Margin="0" Style="{StaticResource SidebarSection}">
+            <StackPanel>
+              <TextBlock Margin="0,0,0,6" Style="{StaticResource SidebarHeader}" Text="RESULT" />
+              <TextBlock FontSize="12.5"
+                         Foreground="{StaticResource SidebarTextBrush}"
+                         LineHeight="20"
+                         Text="{Binding BoundingBoxText}"
+                         TextWrapping="Wrap" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+          <StackPanel>
+
+            <!-- Generation -->
+            <TextBlock Style="{StaticResource SidebarHeader}" Text="GENERATE" />
+            <Border Style="{StaticResource SidebarSection}">
+              <StackPanel>
+                <DockPanel Margin="0,0,0,6">
+                  <TextBlock DockPanel.Dock="Right"
+                             FontWeight="SemiBold"
+                             Foreground="White"
+                             Text="{Binding ShapeCount}" />
+                  <TextBlock FontSize="13" Foreground="{StaticResource SidebarTextBrush}" Text="Rectangles" />
+                </DockPanel>
+                <Slider Margin="0,0,0,12"
+                        IsSnapToTickEnabled="True"
+                        Maximum="30"
+                        Minimum="1"
+                        TickFrequency="1"
+                        Value="{Binding ShapeCount}" />
+                <Button Command="{Binding GenerateCommand}"
+                        Style="{StaticResource SidebarButton}"
+                        ToolTip="Generate a new random set (Ctrl+G)">
+                  <StackPanel Orientation="Horizontal">
+                    <Path Margin="0,0,10,0" Data="{StaticResource Icon.Refresh}" Style="{StaticResource Icon}" />
+                    <TextBlock Text="Generate new shapes" />
+                  </StackPanel>
+                </Button>
+              </StackPanel>
+            </Border>
+
+            <!-- Filters -->
+            <TextBlock Style="{StaticResource SidebarHeader}" Text="FILTERS" />
+            <Border Style="{StaticResource SidebarSection}">
+              <StackPanel>
+                <CheckBox Margin="0,0,0,12"
+                          Content="Exclude outliers"
+                          IsChecked="{Binding ExcludeOutliers}"
+                          Style="{StaticResource SidebarCheckBox}"
+                          ToolTip="Ignore rectangles that stick out of the main area" />
+                <TextBlock Margin="0,0,0,6" FontSize="12" Foreground="{StaticResource SidebarMutedBrush}" Text="Color filter" />
+                <ListBox DisplayMemberPath="Label"
+                         ItemContainerStyle="{StaticResource NavItem}"
+                         ItemsSource="{Binding ColorFilters}"
+                         SelectedItem="{Binding SelectedColorFilter}"
+                         Style="{StaticResource NavList}" />
+              </StackPanel>
+            </Border>
+
+            <!-- Colors -->
+            <DockPanel Margin="0,0,0,0">
+              <Button Margin="0,0,4,8"
+                      VerticalAlignment="Top"
+                      Command="{Binding ClearColorSelectionCommand}"
+                      Content="Clear"
+                      DockPanel.Dock="Right"
+                      Style="{StaticResource LinkButton}" />
+              <TextBlock Style="{StaticResource SidebarHeader}" Text="COLORS" />
+            </DockPanel>
+            <Border Style="{StaticResource SidebarSection}">
+              <ItemsControl ItemsSource="{Binding Colors}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="{x:Type vm:ColorOptionViewModel}">
+                    <CheckBox Margin="0,3" IsChecked="{Binding IsSelected}" Style="{StaticResource SidebarCheckBox}">
+                      <StackPanel Orientation="Horizontal">
+                        <Border Width="16" Height="16" Margin="0,0,8,0" Background="{Binding Hex}" CornerRadius="4" />
+                        <TextBlock FontFamily="{StaticResource CodeFont}" FontSize="12" Text="{Binding Label}" />
+                      </StackPanel>
+                    </CheckBox>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+
+    <!-- ============================== Canvas ============================== -->
+    <Grid Grid.Column="1" Margin="28,24,28,24">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <StackPanel Margin="0,0,0,16">
+        <TextBlock Style="{StaticResource PageTitle}" Text="Extreme points of rectangles" />
+        <TextBlock Style="{StaticResource MutedText}" Text="{Binding SummaryText}" />
+      </StackPanel>
+
+      <Border Grid.Row="1"
+              Padding="16"
+              Background="{StaticResource CardBrush}"
+              BorderBrush="{StaticResource DividerBrush}"
+              BorderThickness="1"
+              CornerRadius="12">
+        <Viewbox Stretch="Uniform">
+          <Grid Width="{Binding CanvasBounds.Width}" Height="{Binding CanvasBounds.Height}" ClipToBounds="True">
+
+            <!-- Grid paper -->
+            <Rectangle>
+              <Rectangle.Fill>
+                <DrawingBrush TileMode="Tile" Viewport="0,0,20,20" ViewportUnits="Absolute">
+                  <DrawingBrush.Drawing>
+                    <GeometryDrawing Geometry="M0,0 L20,0 M0,0 L0,20">
+                      <GeometryDrawing.Pen>
+                        <Pen Brush="#EEF0F4" Thickness="1" />
+                      </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                  </DrawingBrush.Drawing>
+                </DrawingBrush>
+              </Rectangle.Fill>
+            </Rectangle>
+
+            <Canvas>
+              <!-- Main area -->
+              <Rectangle Canvas.Left="{Binding Area.X}"
+                         Canvas.Top="{Binding Area.Y}"
+                         Width="{Binding Area.Width}"
+                         Height="{Binding Area.Height}"
+                         Fill="#F8FAFF"
+                         RadiusX="4"
+                         RadiusY="4"
+                         Stroke="{StaticResource SecondaryTextBrush}"
+                         StrokeThickness="2" />
+              <TextBlock Canvas.Left="{Binding Area.X}"
+                         Canvas.Top="{Binding Area.Y}"
+                         Margin="0,-22,0,0"
+                         FontSize="12"
+                         FontWeight="SemiBold"
+                         Foreground="{StaticResource SecondaryTextBrush}"
+                         Text="Main area" />
+            </Canvas>
+
+            <!-- Rectangles -->
+            <ItemsControl ItemsSource="{Binding Shapes}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <Canvas />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                  <Setter Property="Canvas.Left" Value="{Binding X}" />
+                  <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                </Style>
+              </ItemsControl.ItemContainerStyle>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type vm:ShapeItemViewModel}">
+                  <Grid x:Name="Shape"
+                        Width="{Binding Width}"
+                        Height="{Binding Height}"
+                        Background="Transparent"
+                        ToolTip="{Binding Description}">
+                    <Rectangle Fill="{Binding Fill}"
+                               Opacity="0.8"
+                               RadiusX="3"
+                               RadiusY="3"
+                               Stroke="White"
+                               StrokeThickness="1.5" />
+                    <TextBlock Margin="5,3,0,0"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Top"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               Text="{Binding Number, StringFormat='#{0}'}" />
+                  </Grid>
+                  <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsIncluded}" Value="False">
+                      <Setter TargetName="Shape" Property="Opacity" Value="0.28" />
+                    </DataTrigger>
+                    <Trigger SourceName="Shape" Property="IsMouseOver" Value="True">
+                      <Setter TargetName="Shape" Property="Opacity" Value="1" />
+                    </Trigger>
+                  </DataTemplate.Triggers>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Bounding box and extreme points -->
+            <Canvas IsHitTestVisible="False" Visibility="{Binding IsBoxShown, Converter={StaticResource VisibleWhen}}">
+              <Rectangle Canvas.Left="{Binding Box.X}"
+                         Canvas.Top="{Binding Box.Y}"
+                         Width="{Binding Box.Width}"
+                         Height="{Binding Box.Height}"
+                         Fill="#144F46E5"
+                         Stroke="{StaticResource AccentBrush}"
+                         StrokeDashArray="5 3"
+                         StrokeThickness="2.5" />
+            </Canvas>
+            <ItemsControl IsHitTestVisible="False" ItemsSource="{Binding ExtremeCorners}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <Canvas />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                  <Setter Property="Canvas.Left" Value="{Binding X}" />
+                  <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                </Style>
+              </ItemsControl.ItemContainerStyle>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Ellipse Width="12"
+                           Height="12"
+                           Margin="-6,-6,0,0"
+                           Fill="{StaticResource AccentBrush}"
+                           Stroke="White"
+                           StrokeThickness="2.5" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </Grid>
+        </Viewbox>
+      </Border>
+
+      <!-- Legend -->
+      <WrapPanel Grid.Row="2" Margin="4,14,0,0">
+        <WrapPanel.Resources>
+          <Style TargetType="TextBlock" BasedOn="{StaticResource MutedText}">
+            <Setter Property="Margin" Value="8,0,24,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+          </Style>
+        </WrapPanel.Resources>
+        <Rectangle Width="18" Height="12" Fill="#F8FAFF" RadiusX="2" RadiusY="2" Stroke="{StaticResource SecondaryTextBrush}" StrokeThickness="1.5" />
+        <TextBlock Text="Main area" />
+        <Rectangle Width="18" Height="12" Fill="{StaticResource AccentBrush}" Opacity="0.8" RadiusX="2" RadiusY="2" />
+        <TextBlock Text="Used rectangle" />
+        <Rectangle Width="18" Height="12" Fill="{StaticResource AccentBrush}" Opacity="0.28" RadiusX="2" RadiusY="2" />
+        <TextBlock Text="Filtered out" />
+        <Rectangle Width="18" Height="12" Fill="#144F46E5" Stroke="{StaticResource AccentBrush}" StrokeDashArray="3 2" StrokeThickness="1.5" />
+        <TextBlock Text="Bounding box" />
+        <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBrush}" />
+        <TextBlock Text="Extreme points" />
+        <TextBlock Foreground="{StaticResource BorderStrongBrush}" Text="Ctrl+G generate  ·  Ctrl+H highlight" />
+      </WrapPanel>
+    </Grid>
+  </Grid>
+</Window>

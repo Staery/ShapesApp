@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>ShapesApp</RootNamespace>
+    <AssemblyName>ShapesApp</AssemblyName>
+    <ApplicationIcon>Assets\shapesapp.ico</ApplicationIcon>
+    <AssemblyTitle>ShapesApp — bounding box explorer</AssemblyTitle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\shapesapp.ico" />
+    <Resource Include="Assets\logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ShapesApp.Core\ShapesApp.Core.csproj" />
+  </ItemGroup>
+
+</Project>

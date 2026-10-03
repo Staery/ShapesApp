@@ -58,7 +58,7 @@
                   HorizontalAlignment="Center"
                   Command="{Binding HideExtremePointsCommand}"
                   Content="Hide bounding box"
-                  Style="{StaticResource LinkButton}"
+                  Style="{StaticResource SidebarLinkButton}"
                   Visibility="{Binding IsBoundingBoxVisible, Converter={StaticResource VisibleWhen}}" />
           <Border Margin="0" Style="{StaticResource SidebarSection}">
             <StackPanel>
@@ -128,7 +128,7 @@
                       Command="{Binding ClearColorSelectionCommand}"
                       Content="Clear"
                       DockPanel.Dock="Right"
-                      Style="{StaticResource LinkButton}" />
+                      Style="{StaticResource SidebarLinkButton}" />
               <TextBlock Style="{StaticResource SidebarHeader}" Text="COLORS" />
             </DockPanel>
             <Border Style="{StaticResource SidebarSection}">
@@ -309,7 +309,7 @@
         <TextBlock Text="Bounding box" />
         <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBrush}" />
         <TextBlock Text="Extreme points" />
-        <TextBlock Foreground="{StaticResource BorderStrongBrush}" Text="Ctrl+G generate  ·  Ctrl+H highlight" />
+        <TextBlock Text="Ctrl+G generate  ·  Ctrl+H highlight" />
       </WrapPanel>
     </Grid>
   </Grid>

@@ -24,7 +24,13 @@ rectangles you choose (the left-, right-, top- and bottom-most edges) and draws 
 them. Filters let you leave out rectangles that stick out of the main area, or restrict the calculation to certain
 colors. The result updates the moment you change a filter.
 
-<!-- Add a screenshot of the running app here, e.g. docs/screenshot.png -->
+## 📸 Screenshots
+
+![Bounding box of the rectangles inside the main area](docs/screenshots/bounding-box.png)
+
+*Outliers included, only the selected colors (#1 and #3) are used:*
+
+![Color filter](docs/screenshots/color-filter.png)
 
 ## ✨ Features
 
@@ -133,4 +139,4 @@ dotnet publish src/ShapesApp -c Release -r win-x64 --self-contained -p:PublishSi
 
 ## 📄 License
 
-[MIT](LICENSE) © 2024 Selkin Anton Olegovich
+[MIT](LICENSE) © 2024–2026 Selkin Anton Olegovich

@@ -1,9 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.9.34728.123
+VisualStudioVersion = 17.10.35201.131
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapesApp", "ShapesApp\ShapesApp.csproj", "{E928530C-7836-42AE-9DED-2655B7493341}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapesApp", "src\ShapesApp\ShapesApp.csproj", "{E928530C-7836-42AE-9DED-2655B7493341}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{01FE4CFD-7B39-4020-A7FE-1914FA223E3E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapesApp.Core", "src\ShapesApp.Core\ShapesApp.Core.csproj", "{5C0E3F7A-2B1D-4E8C-9A6F-3D7B1C2E4F51}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{29E4F6B5-5BF9-4E13-B0B3-19D0EDE26C16}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapesApp.Core.Tests", "tests\ShapesApp.Core.Tests\ShapesApp.Core.Tests.csproj", "{8A4D2C6E-1F3B-4D7A-B5E9-6C2F8A1D3E72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7A3C1E52-6C0B-4E1C-9F57-2B7E0F7D3A41}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+		global.json = global.json
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +31,22 @@ Global
 		{E928530C-7836-42AE-9DED-2655B7493341}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E928530C-7836-42AE-9DED-2655B7493341}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E928530C-7836-42AE-9DED-2655B7493341}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C0E3F7A-2B1D-4E8C-9A6F-3D7B1C2E4F51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C0E3F7A-2B1D-4E8C-9A6F-3D7B1C2E4F51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C0E3F7A-2B1D-4E8C-9A6F-3D7B1C2E4F51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C0E3F7A-2B1D-4E8C-9A6F-3D7B1C2E4F51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A4D2C6E-1F3B-4D7A-B5E9-6C2F8A1D3E72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A4D2C6E-1F3B-4D7A-B5E9-6C2F8A1D3E72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A4D2C6E-1F3B-4D7A-B5E9-6C2F8A1D3E72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A4D2C6E-1F3B-4D7A-B5E9-6C2F8A1D3E72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E928530C-7836-42AE-9DED-2655B7493341} = {01FE4CFD-7B39-4020-A7FE-1914FA223E3E}
+		{5C0E3F7A-2B1D-4E8C-9A6F-3D7B1C2E4F51} = {01FE4CFD-7B39-4020-A7FE-1914FA223E3E}
+		{8A4D2C6E-1F3B-4D7A-B5E9-6C2F8A1D3E72} = {29E4F6B5-5BF9-4E13-B0B3-19D0EDE26C16}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B6D56711-DA09-43DA-99A4-8954F52D2AE5}
